@@ -145,23 +145,78 @@ int main(int argc, char **argv)
                 vector_to_marker.str(std::string());
                 vector_to_marker << std::setprecision(4)
                                  << "x: " << std::setw(8) << tvecs[0](0);
-                cv::putText(image_copy, vector_to_marker.str(),
-                            cvPoint(10, 30), cv::FONT_HERSHEY_SIMPLEX, 0.6,
-                            cvScalar(0, 252, 124), 1, CV_AA);
+                //cv::putText(image_copy, vector_to_marker.str(),
+                //            cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 0.6,
+                //            cv::Scalar(0, 252, 124), 1, CV_8U);
 
                 vector_to_marker.str(std::string());
                 vector_to_marker << std::setprecision(4)
                                  << "y: " << std::setw(8) << tvecs[0](1);
-                cv::putText(image_copy, vector_to_marker.str(),
-                            cvPoint(10, 50), cv::FONT_HERSHEY_SIMPLEX, 0.6,
-                            cvScalar(0, 252, 124), 1, CV_AA);
+                //cv::putText(image_copy, vector_to_marker.str(),
+                //            cv::Point(10, 50), cv::FONT_HERSHEY_SIMPLEX, 0.6,
+                //            cv::Scalar(0, 252, 124), 1, CV_8U);
 
                 vector_to_marker.str(std::string());
                 vector_to_marker << std::setprecision(4)
                                  << "z: " << std::setw(8) << tvecs[0](2);
-                cv::putText(image_copy, vector_to_marker.str(),
-                            cvPoint(10, 70), cv::FONT_HERSHEY_SIMPLEX, 0.6,
-                            cvScalar(0, 252, 124), 1, CV_AA);
+                //cv::putText(image_copy, vector_to_marker.str(),
+                //            cv::Point(10, 70), cv::FONT_HERSHEY_SIMPLEX, 0.6,
+                //            cv::Scalar(0, 252, 124), 1, CV_8U);
+
+		double currentX = tvecs[0](0);
+		double currentY = tvecs[0](1);
+		double currentZ = tvecs[0](2);
+		bool upNeeded = false;
+		bool downNeeded = false;
+		bool leftNeeded = false;
+		bool rightNeeded = false;
+		//std::cout << "\nCurrent Z:     \n" << currentX << std::endl;
+		
+		//draw square
+		cv::rectangle(image_copy, cv::Point(150,100),cv::Point(450,400), cv::Scalar(204,14,46),8);
+
+		//check if arrows need to be drawn
+		if(currentX > 0.05) //move left
+		  {
+		  cv::arrowedLine(image_copy, cv::Point(150, 250), cv::Point(100, 250), cv::Scalar(0,0,255), 7);
+		  leftNeeded = true;
+		  }
+		else if (currentX < -0.05) //move right
+		  {
+		  cv::arrowedLine(image_copy, cv::Point(500, 250), cv::Point(550, 250), cv::Scalar(0,0,255), 7);
+		  rightNeeded = true;
+		  }
+		if (currentY < -0.05) //move up
+		  {
+		  cv::arrowedLine(image_copy, cv::Point(300, 100), cv::Point(300, 50), cv::Scalar(48,234,23), 7);
+		  upNeeded = true;
+		  }
+		else if (currentY > 0.05) //move down
+		  {
+		  cv::arrowedLine(image_copy, cv::Point(300, 400), cv::Point(300, 450), cv::Scalar(48,234,23), 7);
+		  downNeeded = true;
+		  }
+		
+		if (currentZ > 0.3)
+		  {
+		    double metersToDock = currentZ-0.3;
+		    std::string displayString = std::to_string(metersToDock) + " meters";
+		    cv::putText(image_copy, "MOVE CLOSER",
+		      cv::Point(230,250), cv::FONT_HERSHEY_SIMPLEX, 0.6,
+		      cv::Scalar(0,0,255), 2, CV_8U);
+
+		    cv::putText(image_copy, displayString,
+		      cv::Point(450,50), cv::FONT_HERSHEY_SIMPLEX, 0.6,
+		      cv::Scalar(0,0,255), 1, CV_8U);
+		  }
+		//optimal docking
+		if (currentZ < 0.3 &&!leftNeeded && !rightNeeded && !upNeeded && !downNeeded)
+		  {
+		  cv::putText(image_copy,"OPTIMAL DOCKING ACHIEVED...FLY!",
+		      cv::Point(150,450), cv::FONT_HERSHEY_SIMPLEX, 0.6,
+                      cv::Scalar(0, 0, 255), 1, CV_8U);
+		 }
+	    
             }
         }
 
